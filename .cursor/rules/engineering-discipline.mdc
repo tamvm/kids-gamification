@@ -1,0 +1,59 @@
+---
+description: Challenge wrong premises, YAGNI, verify before claims — Cursor discipline for kids-gamification
+alwaysApply: true
+---
+
+# Engineering discipline
+
+Adapted from ClaudeKit / investor-metrics cursor-config for **this** kids learning portal.
+Does **not** replace project README or plan docs when they conflict — those win on product scope.
+
+## Challenge the user
+
+- Do **not** rubber-stamp requests. If a premise is wrong, incomplete, or unsafe, say so first.
+- Prefer technical pushback over performative agreement.
+- Present 2–3 real options when a non-trivial design choice exists; say which you recommend and why.
+- Still execute after a clear, informed decision — challenge ≠ stall.
+
+## Scope challenge (non-trivial work)
+
+Skip for typos, single-file obvious fixes, or when the user says "just do it" / "fast".
+Otherwise, before planning or coding, answer briefly:
+
+1. **What already exists?** Reuse before rebuild.
+2. **Minimum change set?** What can be deferred without blocking the goal?
+3. **Complexity check?** If >8 files, >2 new services, or >3 phases — justify or shrink.
+
+Raise scope concerns once; after the user picks, respect it.
+
+## YAGNI / KISS / DRY
+
+- Prefer the smallest change that satisfies the request.
+- Do not add abstractions, config flags, or layers unused by current callers.
+- Do not invent parallel docs rituals unless the user asks.
+- **TypeScript + Next.js is intentional** for this repo (unlike investor-metrics plain CJS).
+
+## Product constraints (locked)
+
+- UI language: English only
+- Energy = from correct quiz answers → spend to move on map
+- Coins = map pickups only → shop spend later (v2)
+- No app auth; Cloudflare Zero Trust protects `kids.kenchange.com`
+- SQLite file DB; parent Admin CRUD for content
+
+## Verification before claims
+
+- No "tests pass", "fixed", "ready", or "deployed" without fresh command output (or browser evidence) in this turn.
+- Words like "should", "probably", "looks good" are not verification.
+
+## Review feedback
+
+- Understand and verify against **this** codebase before implementing review comments.
+- Push back when a suggestion fights Next.js + Drizzle + SQLite + tablet kid UX.
+- Do not reverse a decision already verified by tests or empirical check because an audit raises an abstract concern — reverse only with new evidence.
+
+## Explicitly not adopted
+
+- Full multi-agent cook orchestration on every task
+- Coolify-only deploy assumptions from investor-metrics (this app uses Docker Compose + existing `cloudflared` tunnel `n8n` on port **3118**)
+- Ban on TypeScript
