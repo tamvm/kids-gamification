@@ -1,0 +1,40 @@
+---
+description: PR workflow — non-draft PRs, UI screenshots, [ready] only when green, human merge
+alwaysApply: true
+---
+
+# PR workflow
+
+Details: `.cursor/skills/pr-workflow/SKILL.md`. Graph: `docs/agent-graph-pr.md`.
+
+## Hard gates
+
+1. **Every update gets a PR** — Open an open (non-draft) PR for every code, docs, or agent-rules change; push follow-ups to that same branch.
+2. **UI changes → screenshots in the PR body** before `[ready]`.
+3. **Babysit → `[ready]` only when green** — All required checks pass and actionable review comments resolved. On every new push, **strip** `[ready]` first; re-add only when green again. Do not merge until Tam explicitly asks.
+
+## Creating PRs
+
+- Always create as open (ready for review) — never draft unless Tam asks.
+- Target `main`. Prefer merge commits (no squash) unless Tam says otherwise.
+- Conventional commits; keep PR commits related to the change only.
+- Optional worktrees under `../kids-worktrees/pr-<N>`.
+
+## Checklist
+
+1. Implement on a feature branch (worktree optional).
+2. Commit, push, open non-draft PR to `main`.
+3. Fill shared-state block in the PR body (`docs/agent-graph-pr.md`).
+4. Run `/verifier` (and `/security-auditor` / `/ui-reviewer` as applicable) in fresh context.
+5. Babysit CI + comments; set `[ready]` only when green.
+6. Stop — wait for Tam to merge.
+7. After merge: cleanup worktree if used. Deploy is TBD until a deploy path exists.
+
+## Must not
+
+- Ship without a PR, or leave the PR as draft (unless asked)
+- Mark UI PRs `[ready]` without screenshots
+- Mark `[ready]` while checks fail/pending
+- Leave `[ready]` after new pushes
+- Merge without an explicit Tam ask
+- Force-push to `main` or skip hooks

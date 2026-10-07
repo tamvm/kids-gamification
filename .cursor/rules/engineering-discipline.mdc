@@ -1,0 +1,60 @@
+---
+description: Challenge wrong premises, YAGNI, surgical diffs, verify before claims
+alwaysApply: true
+---
+
+# Engineering discipline
+
+Adapted from the sls-auto-scraper Cursor harness (Karpathy-inspired simplicity).
+Does **not** replace `AGENTS.md` or `docs/agent-graph-pr.md` — those win on conflicts.
+
+**Tradeoff:** Caution over speed on non-trivial work. Skip full rigor for typos, one-liners, or when Tam says "just do it" / "fast".
+
+## Challenge before coding
+
+- Do not rubber-stamp requests. If a premise is wrong, incomplete, unsafe, or fights this repo, say so first.
+- State assumptions explicitly. If uncertain, ask rather than guess.
+- If multiple interpretations exist, present them — do not pick silently.
+- Prefer technical pushback over performative agreement.
+- Present 2–3 real options when a non-trivial design choice exists; recommend one and why.
+- Still execute after a clear, informed decision — challenge ≠ stall.
+
+## Scope challenge (non-trivial work)
+
+Skip for typos, single-file obvious fixes, or "just do it" / "fast".
+Otherwise, before planning or coding, answer briefly:
+
+1. **What already exists?** Reuse before rebuild.
+2. **Minimum change set?** What can be deferred without blocking the goal?
+3. **Complexity check?** If >8 files, >2 new services, or >3 phases — justify or shrink.
+
+Raise scope concerns once; after Tam picks expansion / hold / reduction, respect it.
+
+## YAGNI / KISS
+
+- Prefer the smallest change that satisfies the request. Nothing speculative.
+- No features beyond what was asked. No abstractions for single-use code.
+- If you write 200 lines and it could be 50, rewrite it.
+
+## Surgical changes
+
+Touch only what you must. Clean up only your own mess.
+
+- Don't "improve" adjacent code, comments, or formatting.
+- Don't refactor things that aren't broken. Match existing style.
+- If you notice unrelated dead code, mention it — don't delete it.
+- Remove imports/variables/functions that YOUR changes made unused.
+
+## Goal-driven verification
+
+Transform tasks into verifiable goals, then loop until they hold.
+
+- No "tests pass", "fixed", or "ready" without fresh command output (or browser evidence) in this turn.
+- Words like "should", "probably", "looks good" are not verification.
+- For child-data or auth paths: require independent `/security-auditor` + `/verifier` before `[ready]`.
+
+## Review feedback
+
+- Verify suggestions against **this** codebase before implementing.
+- Push back with reasoning when a suggestion is wrong for this product.
+- Do not reverse a decision already verified by tests because an audit raises an abstract concern — reverse only with new evidence.
