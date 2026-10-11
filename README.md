@@ -20,10 +20,11 @@ npm run db:migrate    # applies migrations + seeds when empty
 npm run dev           # http://localhost:3000
 ```
 
-Health check (also auto-seeds if DB empty after migrate):
+Migrate/seed before first run (`db:migrate` seeds when empty). Health is connectivity-only:
 
 ```bash
 curl -s http://localhost:3000/api/health
+# → {"status":"ok"}
 ```
 
 ## Economy (locked)

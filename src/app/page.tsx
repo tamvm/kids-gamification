@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 export default function Home() {
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col justify-center gap-8 px-6 py-12">
@@ -17,14 +15,11 @@ export default function Home() {
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row">
-        <Link
-          href="/api/health"
-          className="inline-flex items-center justify-center rounded-2xl bg-ink px-6 py-4 text-center text-lg font-semibold text-cream shadow-md transition hover:scale-[1.02]"
-        >
-          Check API health
-        </Link>
-        <span className="inline-flex items-center justify-center rounded-2xl border-2 border-ink/15 bg-cream/70 px-6 py-4 text-lg font-semibold text-ink/70">
+        <span className="inline-flex items-center justify-center rounded-2xl bg-ink px-6 py-4 text-center text-lg font-semibold text-cream shadow-md">
           Profiles &amp; map coming next
+        </span>
+        <span className="inline-flex items-center justify-center rounded-2xl border-2 border-ink/15 bg-cream/70 px-6 py-4 text-lg font-semibold text-ink/70">
+          Parent admin later
         </span>
       </div>
 
