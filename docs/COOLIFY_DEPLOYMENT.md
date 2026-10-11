@@ -16,9 +16,65 @@ Compose on `:3118` remains a **manual fallback** (`docker-compose.yml`). Prefer 
 
 ---
 
-## What Tam does once in Coolify UI
+## Option A (preferred): give the agent Coolify API access
 
-This cloud agent **cannot** SSH to the VPS or create Coolify resources from here. Please:
+The cloud agent **can** create the app, persistent `/data` volume, env vars, and queue a deploy via Coolify’s REST API — but only if it can reach your Coolify instance.
+
+Your Coolify dashboard hostname (the one you open in the browser) currently redirects (likely Cloudflare Access). Pick **one** access path:
+
+### A1 — Public Coolify URL + Access service token (best for cloud agents)
+
+1. Coolify → **Keys & Tokens** → **API tokens** → create a token with permission to manage applications (read/write).
+2. Cloudflare Zero Trust → Access → **Service Auth** → create a Service Token for the Coolify Access app (or reuse an existing automation token).
+3. Paste back to the agent (chat is fine for a short-lived setup token; revoke after):
+
+```text
+COOLIFY_BASE_URL=https://<your-coolify-host>
+COOLIFY_API_TOKEN=<coolify bearer token>
+CF_ACCESS_CLIENT_ID=<access client id>
+CF_ACCESS_CLIENT_SECRET=<access client secret>
+```
+
+Optional but helpful if you already know them:
+
+```text
+COOLIFY_PROJECT_UUID=...          # or leave blank — agent will list /projects
+COOLIFY_SERVER_UUID=...           # or leave blank — agent will list /servers
+COOLIFY_PRIVATE_KEY_UUID=...      # deploy key already used by other apps (repo is private)
+```
+
+The agent will then:
+
+1. `GET /api/v1/servers` + `GET /api/v1/projects` (create project `kids-gamification` if needed)
+2. `POST /api/v1/applications/private-deploy-key` (or github-app variant) with:
+   - repo `tamvm/kids-gamification`, branch `main` (or current scaffold branch for first smoke)
+   - `build_pack=dockerfile`, `dockerfile_location=Dockerfile`, `ports_exposes=3000`
+   - domain `https://kids.kenchange.com` when ready
+3. `POST /api/v1/applications/{uuid}/storages` → persistent mount `/data`
+4. Set envs: `PORT`, `HOSTNAME`, `DATABASE_PATH=/data/app.db`
+5. `GET/POST /api/v1/deploy?uuid=...`
+6. Tell you the **app UUID** to store as GitHub Actions variable `COOLIFY_APP_UUID`
+
+**Security:** prefer a short-lived / narrowly scoped token; revoke after setup if you want.
+
+### A2 — SSH tunnel from your laptop (if you do not want Access headers)
+
+On a machine that already SSHes to the VPS:
+
+```bash
+ssh -p 2223 -L 8000:localhost:8000 pi@openclaw.hetzner -N
+```
+
+Then either:
+
+- run the create curls yourself against `http://localhost:8000`, or
+- temporarily expose that tunnel to the agent (usually harder than A1).
+
+---
+
+## Option B: create once in Coolify UI
+
+If you prefer clicking:
 
 ### 1. Create the application
 
