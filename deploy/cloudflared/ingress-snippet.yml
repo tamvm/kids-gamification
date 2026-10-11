@@ -1,0 +1,13 @@
+# Append this hostname rule to /home/pi/.cloudflared/config.yml
+# on openclaw.hetzner BEFORE the catch-all `service: http_status:404`.
+# Tunnel name: n8n (already running — do not install another cloudflared).
+#
+# Backup first:
+#   cp ~/.cloudflared/config.yml ~/.cloudflared/config.yml.bak-kids-$(date +%Y%m%d%H%M%S)
+# Then restart the existing tunnel process / cloudflared-n8n.service.
+#
+# DNS for kids.kenchange.com should already point at the same tunnel as other
+# *.kenchange.com hosts.
+
+- hostname: kids.kenchange.com
+  service: http://localhost:3118

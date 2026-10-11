@@ -57,7 +57,12 @@ Only after Tam says to merge:
 gh pr merge <N> --merge
 ```
 
-Deploy path is TBD — note status; do not invent infrastructure.
+### Deploy notes (when shipping runtime)
+
+- VPS: `pi@openclaw.hetzner -p 2223`
+- App bind: **`127.0.0.1:3118`** (not host `:3000` — taken by `openclaw-x.kenchange.com`)
+- Tunnel: existing `n8n` config at `/home/pi/.cloudflared/config.yml` — append ingress from `deploy/cloudflared/ingress-snippet.yml`, backup first, restart tunnel
+- Smoke: `https://kids.kenchange.com` (Zero Trust in front; no app auth)
 
 ## 5. Cleanup
 

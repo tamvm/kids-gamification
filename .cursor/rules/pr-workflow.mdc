@@ -28,7 +28,7 @@ Details: `.cursor/skills/pr-workflow/SKILL.md`. Graph: `docs/agent-graph-pr.md`.
 4. Run `/verifier` (and `/security-auditor` / `/ui-reviewer` as applicable) in fresh context.
 5. Babysit CI + comments; set `[ready]` only when green.
 6. Stop — wait for Tam to merge.
-7. After merge: cleanup worktree if used. Deploy is TBD until a deploy path exists.
+7. After merge: cleanup worktree if used. Deploy via Docker on host **3118** + cloudflared ingress (see skill) when shipping runtime.
 
 ## Must not
 
@@ -38,3 +38,4 @@ Details: `.cursor/skills/pr-workflow/SKILL.md`. Graph: `docs/agent-graph-pr.md`.
 - Leave `[ready]` after new pushes
 - Merge without an explicit Tam ask
 - Force-push to `main` or skip hooks
+- Bind the app to host port **3000** on the VPS (taken by `openclaw-x`); use **3118**
