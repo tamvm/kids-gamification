@@ -34,7 +34,7 @@ Builder must not self-approve. Cap build↔review loops (~2); escalate remaining
 |---------|-----|-----|------|------------|
 | Web app | `.` | `npm run dev` | `curl -s localhost:3000/api/health` | `npm run verify` (`lint` + `build`) |
 | SQLite | `data/app.db` (local) / `/data/app.db` (Docker) | `npm run db:migrate` | seed via health/migrate | `npm run db:generate` |
-| Deploy | `docker-compose.yml` | host `127.0.0.1:3118` | tunnel `kids.kenchange.com` | see `deploy/` |
+| Deploy | Coolify + `docs/COOLIFY_DEPLOYMENT.md` | container `:3000`, volume `/data` | `curl …/api/health` | Actions: CI → Coolify Deploy |
 
 Do not claim "tests pass" without fresh command output in the turn.
 

@@ -2,6 +2,9 @@
 # on openclaw.hetzner BEFORE the catch-all `service: http_status:404`.
 # Tunnel name: n8n (already running — do not install another cloudflared).
 #
+# Prefer Coolify (see docs/COOLIFY_DEPLOYMENT.md). Replace 3118 with the
+# host port Coolify publishes for this app if different.
+#
 # Backup first:
 #   cp ~/.cloudflared/config.yml ~/.cloudflared/config.yml.bak-kids-$(date +%Y%m%d%H%M%S)
 # Then restart the existing tunnel process / cloudflared-n8n.service.

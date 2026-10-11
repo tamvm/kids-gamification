@@ -34,16 +34,16 @@ curl -s http://localhost:3000/api/health
 | Earn | Correct quiz answers (+ streaks) | Map pickups (chest / star / sparkle) |
 | Spend | Move / unlock map nodes | Shop (v2) |
 
-## Deploy (Hetzner)
+## Deploy (Coolify on Hetzner)
 
-```bash
-docker compose up -d --build
-# publishes 127.0.0.1:3118 → container :3000
-```
+Primary path: **Coolify** — see [`docs/COOLIFY_DEPLOYMENT.md`](docs/COOLIFY_DEPLOYMENT.md).
 
-Then append [`deploy/cloudflared/ingress-snippet.yml`](deploy/cloudflared/ingress-snippet.yml) to `~/.cloudflared/config.yml` on `openclaw.hetzner` (backup first) and restart the existing `n8n` tunnel. Do **not** bind host port 3000.
+- Container port `3000`, persistent volume `/data` for SQLite
+- After creating the Coolify app, set GitHub Actions variable `COOLIFY_APP_UUID`
+- Merge to `main` → CI → **Coolify Deploy** workflow (self-hosted runner)
+- Wire `kids.kenchange.com` via cloudflared + **Zero Trust** (no app auth)
 
-Protect the hostname with Cloudflare Zero Trust; the app has no built-in auth.
+Manual fallback: `docker compose up -d --build` → `127.0.0.1:3118` (see `deploy/README.md`).
 
 ## Agent harness
 

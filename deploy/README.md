@@ -1,23 +1,32 @@
-# Deploy on openclaw.hetzner
+# Deploy
 
-## App
+**Preferred:** Coolify — see [`docs/COOLIFY_DEPLOYMENT.md`](../docs/COOLIFY_DEPLOYMENT.md).
+
+## Coolify (summary)
+
+- Dockerfile at repo root, expose container port **3000**
+- Persistent volume on **`/data`** (`DATABASE_PATH=/data/app.db`)
+- Set GitHub variable `COOLIFY_APP_UUID` after creating the app
+- Auto-deploy: Actions workflow **Coolify Deploy** (self-hosted runner → `localhost:8000`)
+- Put Cloudflare Zero Trust on `kids.kenchange.com` before kids use it
+
+## Manual Compose fallback
 
 ```bash
 docker compose up -d --build
 ```
 
-- Listens on **`127.0.0.1:3118`** (container port 3000)
-- SQLite volume: `kids-data` → `/data/app.db`
-- Do **not** use host port 3000 (`openclaw-x.kenchange.com` already uses it)
+- Publishes **`127.0.0.1:3118:3000`**
+- Do **not** bind host port 3000 (`openclaw-x.kenchange.com` already uses it)
 
 ## Cloudflare tunnel
 
-`cloudflared` is already installed and running tunnel **`n8n`**.
+`cloudflared` tunnel **`n8n`** is already on the VPS.
 
 1. Backup: `cp ~/.cloudflared/config.yml ~/.cloudflared/config.yml.bak-kids-$(date +%Y%m%d%H%M%S)`
-2. Insert the rule from `cloudflared/ingress-snippet.yml` **above** the `http_status:404` catch-all
-3. Restart the existing tunnel (`sudo systemctl restart cloudflared-n8n` or the active process)
-4. Confirm DNS for `kids.kenchange.com` already points at the tunnel
-5. Put Cloudflare Zero Trust Access in front of the hostname
+2. Insert rule from `cloudflared/ingress-snippet.yml` (set port to Coolify’s published host port if not 3118)
+3. Restart the existing tunnel — do not install a second cloudflared
+4. Confirm DNS for `kids.kenchange.com`
+5. Enable Zero Trust Access
 
-SSH: `pi@openclaw.hetzner -p 2223`
+SSH (from a machine with keys): `pi@openclaw.hetzner -p 2223`
