@@ -9,14 +9,37 @@ Production target: **Coolify** on the Hetzner host (`openclaw`), same pattern as
 | Dockerfile | `/Dockerfile` (repo root) |
 | Container port | **`3000`** (Coolify “Ports Exposes”) |
 | SQLite path | `DATABASE_PATH=/data/app.db` (persistent volume **required**) |
-| Coolify app UUID | set GitHub Actions variable `COOLIFY_APP_UUID` after create |
+| Coolify project UUID | `n12vvevc3k8zni7tj5jag6a4` (`kids-gamification`) |
+| Coolify app UUID | `vzxs693e0y3ebkr3euxpfe6t` — also set GitHub Actions variable `COOLIFY_APP_UUID` |
+| Host port mapping | `3118:3000` |
+| Deploy key (Coolify) | `kids-gamification-deploy` (`iesu1wr4boc0u6qhig06kntt`) — **add public key to GitHub** (see below) |
 | Health | `GET /api/health` → `{"status":"ok"}` |
 
 Compose on `:3118` remains a **manual fallback** (`docker-compose.yml`). Prefer Coolify once the app UUID exists.
 
 ---
 
-## Option A (preferred): give the agent Coolify API access
+## Blocker for first deploy (needs Tam — 1 minute)
+
+Coolify app **already exists** (created via API). Git clone will fail until this deploy key is on the GitHub repo:
+
+1. Open https://github.com/tamvm/kids-gamification/settings/keys
+2. **Add deploy key** (read-only is enough):
+   - Title: `coolify-kids-gamification`
+   - Key:
+
+```text
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF6Sqv6ahrNYPP2ex7qxBZu1SSYzF7+Whlj08UdjtJY1 kids-gamification-coolify
+```
+
+3. Also set repo Actions variable `COOLIFY_APP_UUID=vzxs693e0y3ebkr3euxpfe6t`
+4. Reply `DEPLOY_KEY_ADDED=yes` — agent will queue Coolify deploy + wire tunnel if needed
+
+---
+
+## Option A: give the agent Coolify API access (already done for create)
+
+Agent used SSH + Coolify CLI token on the VPS to create the project/app. For future cloud-only access without SSH:
 
 The cloud agent **can** create the app, persistent `/data` volume, env vars, and queue a deploy via Coolify’s REST API — but only if it can reach your Coolify instance.
 
