@@ -1,4 +1,24 @@
+import { asc } from "drizzle-orm";
+import Link from "next/link";
+
+import { getDb, schema } from "@/db";
+
+export const dynamic = "force-dynamic";
+
 export default function Home() {
+  const db = getDb();
+  const profiles = db
+    .select({
+      id: schema.profiles.id,
+      name: schema.profiles.name,
+      ageBand: schema.profiles.ageBand,
+      energy: schema.profiles.energy,
+      coins: schema.profiles.coins,
+    })
+    .from(schema.profiles)
+    .orderBy(asc(schema.profiles.name))
+    .all();
+
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col justify-center gap-8 px-6 py-12">
       <div className="space-y-4 text-center sm:text-left">
@@ -14,14 +34,30 @@ export default function Home() {
         </p>
       </div>
 
-      <div className="flex flex-col gap-3 sm:flex-row">
-        <span className="inline-flex items-center justify-center rounded-2xl bg-ink px-6 py-4 text-center text-lg font-semibold text-cream shadow-md">
-          Profiles &amp; map coming next
-        </span>
-        <span className="inline-flex items-center justify-center rounded-2xl border-2 border-ink/15 bg-cream/70 px-6 py-4 text-lg font-semibold text-ink/70">
-          Parent admin later
-        </span>
-      </div>
+      <section className="space-y-3">
+        <h2 className="font-display text-lg font-semibold text-ink">
+          Choose your explorer
+        </h2>
+        <div className="flex flex-col gap-3 sm:flex-row">
+          {profiles.map((profile) => (
+            <Link
+              key={profile.id}
+              href={`/play/${profile.id}`}
+              className="flex flex-1 flex-col rounded-2xl border-2 border-ink/15 bg-cream/70 px-6 py-4 text-left shadow-sm transition hover:border-ink/30 hover:bg-cream"
+            >
+              <span className="font-display text-xl font-semibold text-ink">
+                {profile.name}
+              </span>
+              <span className="text-sm text-ink/70 capitalize">
+                {profile.ageBand} explorer
+              </span>
+              <span className="mt-2 text-sm text-ink/80">
+                {profile.energy} energy · {profile.coins} coins
+              </span>
+            </Link>
+          ))}
+        </div>
+      </section>
 
       <dl className="grid gap-3 rounded-3xl bg-cream/75 p-6 text-left shadow-sm backdrop-blur-sm sm:grid-cols-3">
         <div>
