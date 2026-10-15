@@ -1,5 +1,10 @@
 import { count } from "drizzle-orm";
 
+import {
+  LOGIC_LITTLE_LESSON,
+  LOGIC_LITTLE_QUESTIONS,
+  LOGIC_LITTLE_SUBJECT,
+} from "./content/logic-little";
 import { getDb, schema } from "./index";
 
 const {
@@ -16,12 +21,101 @@ function choice(choices: string[]) {
   return JSON.stringify(choices);
 }
 
+/** Upsert the age-4 Logic starter set so existing DBs pick up new content. */
+export function ensureLogicLittleContent() {
+  const db = getDb();
+
+  db.transaction((tx) => {
+    tx.insert(subjects)
+      .values(LOGIC_LITTLE_SUBJECT)
+      .onConflictDoUpdate({
+        target: subjects.id,
+        set: {
+          name: LOGIC_LITTLE_SUBJECT.name,
+          slug: LOGIC_LITTLE_SUBJECT.slug,
+          icon: LOGIC_LITTLE_SUBJECT.icon,
+          sortOrder: LOGIC_LITTLE_SUBJECT.sortOrder,
+        },
+      })
+      .run();
+
+    tx.insert(lessons)
+      .values(LOGIC_LITTLE_LESSON)
+      .onConflictDoUpdate({
+        target: lessons.id,
+        set: {
+          subjectId: LOGIC_LITTLE_LESSON.subjectId,
+          title: LOGIC_LITTLE_LESSON.title,
+          mapNodeId: LOGIC_LITTLE_LESSON.mapNodeId,
+          sortOrder: LOGIC_LITTLE_LESSON.sortOrder,
+          energyCostToUnlock: LOGIC_LITTLE_LESSON.energyCostToUnlock,
+          difficulty: LOGIC_LITTLE_LESSON.difficulty,
+        },
+      })
+      .run();
+
+    for (const q of LOGIC_LITTLE_QUESTIONS) {
+      tx.insert(questions)
+        .values({
+          id: q.id,
+          lessonId: q.lessonId,
+          prompt: q.prompt,
+          choicesJson: choice(q.choices),
+          correctIndex: q.correctIndex,
+          explanation: q.explanation,
+          difficulty: q.difficulty,
+        })
+        .onConflictDoUpdate({
+          target: questions.id,
+          set: {
+            lessonId: q.lessonId,
+            prompt: q.prompt,
+            choicesJson: choice(q.choices),
+            correctIndex: q.correctIndex,
+            explanation: q.explanation,
+            difficulty: q.difficulty,
+          },
+        })
+        .run();
+    }
+
+    // Meadow is the first stop — point it at Little Thinkers.
+    tx.insert(mapNodes)
+      .values({
+        id: "node-meadow",
+        realm: "meadow",
+        label: "Sunny Meadow",
+        x: 18,
+        y: 62,
+        unlockOrder: 0,
+        lessonId: LOGIC_LITTLE_LESSON.id,
+        energyCostToEnter: 0,
+      })
+      .onConflictDoUpdate({
+        target: mapNodes.id,
+        set: {
+          lessonId: LOGIC_LITTLE_LESSON.id,
+          label: "Sunny Meadow",
+          energyCostToEnter: 0,
+        },
+      })
+      .run();
+  });
+
+  console.log(
+    `Logic little set ready: ${LOGIC_LITTLE_QUESTIONS.length} questions in "${LOGIC_LITTLE_LESSON.title}"`,
+  );
+}
+
 export function seedIfEmpty() {
   const db = getDb();
   const [{ value: profileCount }] = db
     .select({ value: count() })
     .from(profiles)
     .all();
+
+  // Always refresh the little Logic curriculum (idempotent upserts).
+  ensureLogicLittleContent();
 
   if (profileCount > 0) {
     console.log("Seed skipped: profiles already exist");
@@ -38,7 +132,7 @@ export function seedIfEmpty() {
           x: 18,
           y: 62,
           unlockOrder: 0,
-          lessonId: "lesson-math-1",
+          lessonId: LOGIC_LITTLE_LESSON.id,
           energyCostToEnter: 0,
         },
         {
@@ -62,6 +156,7 @@ export function seedIfEmpty() {
           energyCostToEnter: 3,
         },
       ])
+      .onConflictDoNothing()
       .run();
 
     tx.insert(mapPickups)
@@ -85,6 +180,7 @@ export function seedIfEmpty() {
           kind: "sparkle",
         },
       ])
+      .onConflictDoNothing()
       .run();
 
     tx.insert(subjects)
@@ -111,6 +207,7 @@ export function seedIfEmpty() {
           sortOrder: 3,
         },
       ])
+      .onConflictDoNothing()
       .run();
 
     tx.insert(lessons)
@@ -119,9 +216,9 @@ export function seedIfEmpty() {
           id: "lesson-math-1",
           subjectId: "subject-math",
           title: "Counting Adventures",
-          mapNodeId: "node-meadow",
+          mapNodeId: null,
           sortOrder: 1,
-          energyCostToUnlock: 0,
+          energyCostToUnlock: 1,
           difficulty: "easy",
         },
         {
@@ -143,6 +240,7 @@ export function seedIfEmpty() {
           difficulty: "easy",
         },
       ])
+      .onConflictDoNothing()
       .run();
 
     tx.insert(questions)
@@ -215,6 +313,7 @@ export function seedIfEmpty() {
           difficulty: "medium",
         },
       ])
+      .onConflictDoNothing()
       .run();
 
     tx.insert(profiles)
@@ -258,5 +357,5 @@ export function seedIfEmpty() {
       .run();
   });
 
-  console.log("Seed complete: 2 profiles, 3 subjects, starter map");
+  console.log("Seed complete: 2 profiles, Logic + starter subjects, map");
 }

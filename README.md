@@ -52,6 +52,13 @@ Manual fallback: `docker compose up -d --build` → `127.0.0.1:3118` (see `deplo
 - `.cursor/agents/` — verifier, security-auditor, ui-reviewer
 - `.cursor/rules/` + `.cursor/skills/` — discipline + PR workflow
 
+## Curriculum (seed)
+
+- **Logic · Little Thinkers** — first set for the little explorer (~age 4): patterns, same/different, categories, size, sequence (12 MCQs). Meadow map node.
+- Math / Writing / Chess — later nodes; placeholders remain in seed.
+
+Re-run `npm run db:seed` (or `db:migrate`) to upsert Logic content on an existing DB.
+
 ## Phase map
 
 1. Scaffold (this) — app shell, schema, seed, Docker `:3118`
