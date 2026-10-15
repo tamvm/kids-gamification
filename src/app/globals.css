@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+:root {
+  --sky-top: #7ec8e3;
+  --sky-mid: #b8e0d2;
+  --meadow: #8fbc5a;
+  --path: #e8c07a;
+  --castle: #c97b84;
+  --ink: #243447;
+  --cream: #fff8ef;
+  --energy: #5bbf7a;
+  --coin: #e6b422;
+}
+
+@theme inline {
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display);
+  --color-ink: var(--ink);
+  --color-cream: var(--cream);
+  --color-energy: var(--energy);
+  --color-coin: var(--coin);
+}
+
+body {
+  color: var(--ink);
+  font-family: var(--font-body), system-ui, sans-serif;
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse 120% 80% at 10% 0%, #fff3c4 0%, transparent 45%),
+    radial-gradient(ellipse 90% 70% at 90% 10%, #ffd6e0 0%, transparent 40%),
+    linear-gradient(180deg, var(--sky-top) 0%, var(--sky-mid) 42%, var(--meadow) 100%);
+}
+
+h1,
+h2,
+h3,
+.font-display {
+  font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
+}

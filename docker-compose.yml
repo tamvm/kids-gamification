@@ -1,0 +1,17 @@
+services:
+  kids:
+    build: .
+    container_name: kids-gamification
+    restart: unless-stopped
+    ports:
+      # Host 3118 — do not use 3000 (taken by openclaw-x on the VPS)
+      - "127.0.0.1:3118:3000"
+    environment:
+      DATABASE_PATH: /data/app.db
+      PORT: "3000"
+      HOSTNAME: 0.0.0.0
+    volumes:
+      - kids-data:/data
+
+volumes:
+  kids-data:

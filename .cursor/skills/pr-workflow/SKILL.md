@@ -57,7 +57,12 @@ Only after Tam says to merge:
 gh pr merge <N> --merge
 ```
 
-Deploy path is TBD — note status; do not invent infrastructure.
+### Deploy notes (when shipping runtime)
+
+- **Coolify** (preferred): see `docs/COOLIFY_DEPLOYMENT.md` — needs `COOLIFY_APP_UUID` repo variable; persistent `/data` volume; workflow `Coolify Deploy`
+- Compose fallback: **`127.0.0.1:3118`** (not host `:3000` — taken by `openclaw-x.kenchange.com`)
+- Tunnel: existing `n8n` at `/home/pi/.cloudflared/config.yml` — ingress → Coolify host port; Zero Trust on `kids.kenchange.com`
+- Smoke: `https://kids.kenchange.com/api/health` → `{"status":"ok"}`
 
 ## 5. Cleanup
 
