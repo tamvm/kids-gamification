@@ -30,7 +30,7 @@ export default function Home() {
         </h1>
         <p className="max-w-xl text-lg text-ink/85">
           Answer questions to earn energy. Explore the map. Pick up coins for the
-          shop. Math, writing, and chess — each explorer has their own adventure.
+          shop. Logic for little explorers, then math, writing, and chess.
         </p>
       </div>
 
