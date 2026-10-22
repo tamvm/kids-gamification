@@ -13,9 +13,6 @@ export async function GET() {
       name: schema.profiles.name,
       avatarKey: schema.profiles.avatarKey,
       ageBand: schema.profiles.ageBand,
-      energy: schema.profiles.energy,
-      coins: schema.profiles.coins,
-      streak: schema.profiles.streak,
     })
     .from(schema.profiles)
     .orderBy(asc(schema.profiles.name))

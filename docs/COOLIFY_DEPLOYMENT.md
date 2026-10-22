@@ -122,9 +122,11 @@ NODE_ENV=production
 PORT=3000
 HOSTNAME=0.0.0.0
 DATABASE_PATH=/data/app.db
+SESSION_SECRET=<unique random value, not the demo session secret>
+PARENT_PASSWORD=<unique parent password, not the README demo password>
 ```
 
-No app auth secrets yet — put **Cloudflare Zero Trust** on the hostname before public use.
+Do not set `PUBLIC_HOST` to `localhost` or `127.0.0.1` on this app. If either secret is missing or still the documented demo value, the container refuses to boot. Use a fresh `/data` volume so the only profiles are `Celine (demo)` and `Test Child`. Put **Cloudflare Zero Trust** on the hostname before public use.
 
 ### 4. First deploy + note the UUID + host port
 

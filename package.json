@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "tsx src/db/migrate.ts && next dev --turbopack",
+    "test": "tsx --test src/lib/learn/rewards.test.ts src/lib/learn/dates.test.ts src/lib/learn/mark.test.ts src/lib/learn/time-money.test.ts src/lib/learn/boot.test.ts",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
@@ -11,7 +12,7 @@
     "db:migrate": "tsx src/db/migrate.ts",
     "db:seed": "tsx src/db/seed-cli.ts",
     "db:studio": "drizzle-kit studio",
-    "verify": "npm run lint && npm run build"
+    "verify": "npm run lint && npm run test && npm run build"
   },
   "dependencies": {
     "better-sqlite3": "^13.0.3",
