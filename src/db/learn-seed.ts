@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 
 import { hashSecret } from "@/lib/learn/auth-crypto";
+import { isLocalBoot, resolveParentPassword } from "@/lib/learn/boot";
 import {
   LEARN_COURSES,
   LEARN_LESSONS,
@@ -23,13 +24,19 @@ export function ensureLearnPlayDemo() {
     .from(schema.parents)
     .where(eq(schema.parents.id, DEMO_PARENT.id))
     .get();
+  const password = resolveParentPassword();
   if (!parent) {
     db.insert(schema.parents)
       .values({
         id: DEMO_PARENT.id,
         displayName: DEMO_PARENT.displayName,
-        passwordHash: hashSecret(DEMO_PARENT.password),
+        passwordHash: hashSecret(password),
       })
+      .run();
+  } else if (!isLocalBoot()) {
+    db.update(schema.parents)
+      .set({ passwordHash: hashSecret(password) })
+      .where(eq(schema.parents.id, DEMO_PARENT.id))
       .run();
   }
 

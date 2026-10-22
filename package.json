@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "tsx src/db/migrate.ts && next dev --turbopack",
-    "test": "tsx --test src/lib/learn/rewards.test.ts src/lib/learn/dates.test.ts src/lib/learn/mark.test.ts src/lib/learn/time-money.test.ts",
+    "test": "tsx --test src/lib/learn/rewards.test.ts src/lib/learn/dates.test.ts src/lib/learn/mark.test.ts src/lib/learn/time-money.test.ts src/lib/learn/boot.test.ts",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",

@@ -30,17 +30,19 @@ curl -s http://localhost:3000/api/health
 
 The compose file publishes host port **3118** to the container port 3000. The entrypoint migrates and seeds, then starts the server.
 
+On a laptop, where the site is only on loopback, the demo logins below are allowed:
+
 ```bash
-docker compose up --build
+PUBLIC_HOST=127.0.0.1 docker compose up --build
 ```
 
 Open http://127.0.0.1:3118
 
-Do not bind this app to host port 3000 on the VPS.
+The image runs with `NODE_ENV=production`. It refuses to start unless `PUBLIC_HOST` is loopback, or both `SESSION_SECRET` and `PARENT_PASSWORD` are set to values other than the demo defaults. Do not set `PUBLIC_HOST` to a loopback address on the VPS. Production (`kids.kenchange.com`) must set those two variables in Coolify. Do not bind this app to host port 3000 on the VPS.
 
 ## Demo logins
 
-These are fake local logins, not real secrets. They are hashed before they are stored. `data/app.db` is gitignored.
+These are fake local logins, not real secrets. They are hashed before they are stored. `data/app.db` is gitignored. Outside localhost the process will not boot if `SESSION_SECRET` or `PARENT_PASSWORD` is missing or still set to these demo values. A fresh production database gets only Celine (demo) and Test Child.
 
 | Who | How to sign in |
 | --- | --- |

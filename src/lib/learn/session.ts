@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { readToken, signSession, type Session } from "./auth-crypto";
+import { sessionCookieSecure } from "./boot";
 
 const COOKIE = "lp_session";
 const MAX_AGE = 8 * 60 * 60;
@@ -16,6 +17,7 @@ export async function setSession(session: Session) {
   jar.set(COOKIE, signSession(session), {
     httpOnly: true,
     sameSite: "lax",
+    secure: sessionCookieSecure(),
     path: "/",
     maxAge: MAX_AGE,
   });

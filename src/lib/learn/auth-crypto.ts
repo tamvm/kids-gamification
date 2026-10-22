@@ -5,6 +5,8 @@ import {
   timingSafeEqual,
 } from "node:crypto";
 
+import { resolveSessionSecret } from "./boot";
+
 const DUMMY_HASH = `${"ab".repeat(16)}:${"cd".repeat(32)}`;
 
 export function hashSecret(secret: string): string {
@@ -31,7 +33,7 @@ export type Session =
   | { role: "kid"; profileId: string; exp: number };
 
 export function sessionSecret(): string {
-  return process.env.SESSION_SECRET ?? "learn-play-demo-session";
+  return resolveSessionSecret();
 }
 
 export function signSession(session: Session, secret = sessionSecret()): string {

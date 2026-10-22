@@ -1,5 +1,7 @@
 import { count } from "drizzle-orm";
 
+import { isLocalBoot } from "../lib/learn/boot";
+
 import {
   LOGIC_LITTLE_LESSON,
   LOGIC_LITTLE_QUESTIONS,
@@ -118,6 +120,11 @@ export function seedIfEmpty() {
   // Always refresh the little Logic curriculum (idempotent upserts).
   ensureLogicLittleContent();
   ensureLearnPlayDemo();
+
+  if (!isLocalBoot()) {
+    console.log("Seed: production keeps only the learn-play demo profiles");
+    return;
+  }
 
   if (profileCount > 0) {
     console.log("Seed skipped: profiles already exist");
