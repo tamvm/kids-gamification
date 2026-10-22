@@ -14,9 +14,8 @@ const body = Nunito({
 });
 
 export const metadata: Metadata = {
-  title: "Kids Quest",
-  description:
-    "Learn math, writing, and chess — earn energy, explore the map, collect coins.",
+  title: "Learn and Play",
+  description: "Year 2 practice, stars, and a short memory game.",
 };
 
 export default function RootLayout({
@@ -25,7 +24,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en-AU">
       <body className={`${display.variable} ${body.variable} antialiased`}>
         {children}
       </body>
