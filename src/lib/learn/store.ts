@@ -833,36 +833,48 @@ export function insertProfile(input: {
     .run();
 }
 
-export function syncAssignments(pairs: { courseId: string; profileId: string }[]) {
-  const profiles = db()
+export function setCourseAssignment(input: {
+  courseId: string;
+  profileId: string;
+  assigned: boolean;
+}) {
+  const profile = db()
     .select({ id: schema.profiles.id })
     .from(schema.profiles)
-    .where(eq(schema.profiles.learnPortal, true))
-    .all();
-  const courses = new Set(
+    .where(
+      and(eq(schema.profiles.id, input.profileId), eq(schema.profiles.learnPortal, true)),
+    )
+    .get();
+  if (!profile) throw new LearnError("Unknown profile.");
+  const course = db()
+    .select({ id: schema.learnCourses.id })
+    .from(schema.learnCourses)
+    .where(eq(schema.learnCourses.id, input.courseId))
+    .get();
+  if (!course) throw new LearnError("Unknown course.");
+
+  if (input.assigned) {
     db()
-      .select({ id: schema.learnCourses.id })
-      .from(schema.learnCourses)
-      .all()
-      .map((row) => row.id),
-  );
-  const profileIds = profiles.map((row) => row.id);
-  const allowed = new Set(profileIds);
-  const clean = pairs.filter(
-    (pair) => allowed.has(pair.profileId) && courses.has(pair.courseId),
-  );
-  db().transaction((tx) => {
-    if (profileIds.length) {
-      tx.delete(schema.learnAssignments)
-        .where(inArray(schema.learnAssignments.profileId, profileIds))
-        .run();
-    }
-    for (const pair of clean) {
-      tx.insert(schema.learnAssignments)
-        .values({ id: randomUUID(), courseId: pair.courseId, profileId: pair.profileId })
-        .run();
-    }
-  });
+      .insert(schema.learnAssignments)
+      .values({
+        id: randomUUID(),
+        courseId: input.courseId,
+        profileId: input.profileId,
+      })
+      .onConflictDoNothing()
+      .run();
+    return;
+  }
+
+  db()
+    .delete(schema.learnAssignments)
+    .where(
+      and(
+        eq(schema.learnAssignments.courseId, input.courseId),
+        eq(schema.learnAssignments.profileId, input.profileId),
+      ),
+    )
+    .run();
 }
 
 export function createParentCourse(input: {

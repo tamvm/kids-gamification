@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 
 import { hashSecret } from "@/lib/learn/auth-crypto";
 import { isLocalBoot, resolveParentPassword } from "@/lib/learn/boot";
@@ -11,6 +11,7 @@ import {
   CELINE_DEMO_ID,
   DEMO_PARENT,
   DEMO_PROFILES,
+  TEST_CHILD_ID,
 } from "@/lib/learn/demo-accounts";
 
 import { getDb, schema } from "./index";
@@ -124,4 +125,58 @@ export function ensureLearnPlayDemo() {
       }
     }
   }
+
+  // Existing production databases already have the Test Child row, so the
+  // insert above is skipped. Fill only missing sample-course rows for that
+  // profile id. Other profiles, including Celine and parent-created children,
+  // are never read for mutation.
+  ensureTestChildSampleAssignments();
+}
+
+/**
+ * Inserts missing sample-course assignments for `profile-test-child` only.
+ * Safe to run on every boot: no updates, no deletes, no other profile ids.
+ * A later uncheck of one of these four courses is restored on the next boot.
+ */
+export function ensureTestChildSampleAssignments() {
+  const db = getDb();
+  const profile = db
+    .select({ id: schema.profiles.id })
+    .from(schema.profiles)
+    .where(eq(schema.profiles.id, TEST_CHILD_ID))
+    .get();
+  if (!profile) return;
+
+  const sampleIds = LEARN_COURSES.map((course) => course.id);
+  const present = new Set(
+    db
+      .select({ id: schema.learnCourses.id })
+      .from(schema.learnCourses)
+      .where(inArray(schema.learnCourses.id, sampleIds))
+      .all()
+      .map((row) => row.id),
+  );
+  const assigned = new Set(
+    db
+      .select({ courseId: schema.learnAssignments.courseId })
+      .from(schema.learnAssignments)
+      .where(eq(schema.learnAssignments.profileId, TEST_CHILD_ID))
+      .all()
+      .map((row) => row.courseId),
+  );
+  const missing = sampleIds.filter((courseId) => present.has(courseId) && !assigned.has(courseId));
+  if (missing.length === 0) return;
+
+  db.transaction((tx) => {
+    for (const courseId of missing) {
+      tx.insert(schema.learnAssignments)
+        .values({
+          id: `assign-${TEST_CHILD_ID}-${courseId}`,
+          courseId,
+          profileId: TEST_CHILD_ID,
+        })
+        .onConflictDoNothing()
+        .run();
+    }
+  });
 }
