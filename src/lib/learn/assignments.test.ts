@@ -11,9 +11,9 @@ const dbFile = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "kg-assign-")), "
 process.env.DATABASE_PATH = dbFile;
 process.env.NODE_ENV = "development";
 
-test("Test Child gets every sample course, backfill skips other profiles, and a toggle survives a fresh read", async () => {
+test("Test Child sample backfill runs once, skips other profiles, and a toggle survives restart", async () => {
   const { getDb, schema } = await import("../../db/index");
-  const { ensureLearnPlayDemo } = await import("../../db/learn-seed");
+  const { ensureLearnPlayDemo, TEST_CHILD_SAMPLE_MARKER } = await import("../../db/learn-seed");
   const { LEARN_COURSES } = await import("./content");
   const { CELINE_DEMO_ID, TEST_CHILD_ID } = await import("./demo-accounts");
   const { LearnError, parentDashboard, setCourseAssignment } = await import("./store");
@@ -33,12 +33,24 @@ test("Test Child gets every sample course, backfill skips other profiles, and a 
       .sort();
 
   assert.deepEqual(assignedTo(TEST_CHILD_ID), sampleIds);
+  assert.equal(
+    db
+      .select({ id: schema.learnBootMarkers.id })
+      .from(schema.learnBootMarkers)
+      .where(eq(schema.learnBootMarkers.id, TEST_CHILD_SAMPLE_MARKER))
+      .get()?.id,
+    TEST_CHILD_SAMPLE_MARKER,
+  );
 
   const missingForChild = sampleIds[0];
   const missingForCeline = sampleIds[1];
   const parentMadeId = "profile-parent-made";
   const sameNameId = "profile-named-test-child";
 
+  // Production shape before this boot marker existed: Test Child is short one course.
+  db.delete(schema.learnBootMarkers)
+    .where(eq(schema.learnBootMarkers.id, TEST_CHILD_SAMPLE_MARKER))
+    .run();
   db.delete(schema.learnAssignments)
     .where(
       and(
@@ -94,11 +106,6 @@ test("Test Child gets every sample course, backfill skips other profiles, and a 
   assert.deepEqual(assignedTo(parentMadeId), parentBefore);
   assert.deepEqual(assignedTo(sameNameId), []);
 
-  const count = () => db.select().from(schema.learnAssignments).all().length;
-  const stable = count();
-  ensureLearnPlayDemo();
-  assert.equal(count(), stable);
-
   setCourseAssignment({
     courseId: missingForChild,
     profileId: TEST_CHILD_ID,
@@ -118,6 +125,18 @@ test("Test Child gets every sample course, backfill skips other profiles, and a 
     true,
   );
 
+  ensureLearnPlayDemo();
+  const afterRestart = parentDashboard();
+  assert.equal(
+    afterRestart.assignments.some(
+      (row) => row.courseId === missingForChild && row.profileId === TEST_CHILD_ID,
+    ),
+    false,
+  );
+  assert.deepEqual(assignedTo(CELINE_DEMO_ID), celineBefore);
+  assert.deepEqual(assignedTo(parentMadeId), parentBefore);
+  assert.deepEqual(assignedTo(sameNameId), []);
+
   setCourseAssignment({
     courseId: missingForChild,
     profileId: TEST_CHILD_ID,
@@ -130,8 +149,9 @@ test("Test Child gets every sample course, backfill skips other profiles, and a 
     ),
     true,
   );
+  ensureLearnPlayDemo();
   assert.equal(
-    afterRecheck.assignments.filter(
+    parentDashboard().assignments.filter(
       (row) => row.courseId === missingForChild && row.profileId === TEST_CHILD_ID,
     ).length,
     1,
