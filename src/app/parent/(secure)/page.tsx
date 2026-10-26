@@ -6,9 +6,9 @@ import {
   createCourseAction,
   createProfileAction,
   declineAction,
-  saveAssignmentsAction,
   saveProfileAction,
 } from "@/app/parent/actions";
+import { AssignmentToggle } from "@/components/learn/assignment-toggle";
 import { AVATARS, avatarByKey } from "@/lib/learn/avatars";
 import { AC_TEXT, TIME_STRETCH_NOTE } from "@/lib/learn/content";
 import { parentDashboard } from "@/lib/learn/store";
@@ -62,7 +62,7 @@ export default async function ParentPage({
 
       <section className="rounded-[28px] bg-white/90 p-5">
         <h2 className="font-display text-3xl font-semibold text-ink">Courses</h2>
-        <form action={saveAssignmentsAction} className="mt-4 flex flex-col gap-4">
+        <div className="mt-4 flex flex-col gap-4">
           {data.courses.map((course) => (
             <article key={course.id} className="rounded-2xl bg-slate-50 p-4">
               <div className="flex flex-wrap items-baseline justify-between gap-2">
@@ -89,27 +89,21 @@ export default async function ParentPage({
                 <p className="mt-2 text-sm text-ink/80">{TIME_STRETCH_NOTE}</p>
               ) : null}
               <div className="mt-3 flex flex-wrap gap-4">
-                {data.profiles.map((profile) => {
-                  const checked = data.assignments.some(
-                    (row) => row.courseId === course.id && row.profileId === profile.id,
-                  );
-                  return (
-                    <label key={profile.id} className="flex items-center gap-2 font-semibold text-ink">
-                      <input
-                        type="checkbox"
-                        name="assign"
-                        value={`${course.id}|${profile.id}`}
-                        defaultChecked={checked}
-                      />
-                      {profile.name}
-                    </label>
-                  );
-                })}
+                {data.profiles.map((profile) => (
+                  <AssignmentToggle
+                    key={profile.id}
+                    courseId={course.id}
+                    profileId={profile.id}
+                    profileName={profile.name}
+                    checked={data.assignments.some(
+                      (row) => row.courseId === course.id && row.profileId === profile.id,
+                    )}
+                  />
+                ))}
               </div>
             </article>
           ))}
-          <button className="min-h-12 rounded-xl bg-slate-900 px-4 font-bold text-white">Save assignments</button>
-        </form>
+        </div>
         <form action={createCourseAction} className="mt-6 grid gap-2 md:grid-cols-2">
           <h3 className="md:col-span-2 font-display text-2xl font-semibold text-ink">New course</h3>
           <input name="title" required placeholder="Title" className={inputClass} />

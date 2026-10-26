@@ -14,7 +14,7 @@ import {
   LearnError,
   saveCourseMeta,
   saveProfile,
-  syncAssignments,
+  setCourseAssignment,
   updateQuestion,
 } from "@/lib/learn/store";
 
@@ -57,14 +57,35 @@ export async function createProfileAction(formData: FormData) {
   redirect("/parent");
 }
 
-export async function saveAssignmentsAction(formData: FormData) {
+export async function setAssignmentAction(input: {
+  courseId: string;
+  profileId: string;
+  assigned: boolean;
+}): Promise<{ ok: true } | { ok: false }> {
   await requireParent();
-  const pairs = formData.getAll("assign").map((value) => {
-    const [courseId, profileId] = String(value).split("|");
-    return { courseId, profileId };
-  });
-  syncAssignments(pairs);
-  redirect("/parent");
+  if (
+    !input ||
+    typeof input.courseId !== "string" ||
+    typeof input.profileId !== "string" ||
+    typeof input.assigned !== "boolean" ||
+    input.courseId.length === 0 ||
+    input.courseId.length > 80 ||
+    input.profileId.length === 0 ||
+    input.profileId.length > 80
+  ) {
+    return { ok: false };
+  }
+  try {
+    setCourseAssignment({
+      courseId: input.courseId,
+      profileId: input.profileId,
+      assigned: input.assigned,
+    });
+    return { ok: true };
+  } catch (error) {
+    if (error instanceof LearnError) return { ok: false };
+    throw error;
+  }
 }
 
 export async function createCourseAction(formData: FormData) {

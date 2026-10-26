@@ -30,3 +30,4 @@ export const DEMO_PROFILES = [
 ] as const;
 
 export const CELINE_DEMO_ID = DEMO_PROFILES[0].id;
+export const TEST_CHILD_ID = DEMO_PROFILES[1].id;

@@ -15,6 +15,13 @@
       "when": 1792664613605,
       "tag": "0001_learn_play",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1792982341027,
+      "tag": "0002_test_child_assignment_marker",
+      "breakpoints": true
     }
   ]
 }

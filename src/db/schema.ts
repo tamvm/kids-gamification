@@ -76,6 +76,13 @@ export const learnQuestions = sqliteTable("learn_questions", {
   sortOrder: integer("sort_order").notNull().default(0),
 });
 
+export const learnBootMarkers = sqliteTable("learn_boot_markers", {
+  id: text("id").primaryKey(),
+  createdAt: text("created_at")
+    .notNull()
+    .default(sql`(datetime('now'))`),
+});
+
 export const learnAssignments = sqliteTable(
   "learn_assignments",
   {
