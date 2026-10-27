@@ -1,0 +1,14 @@
+---
+description: Non-trivial work needs a Tam-approved spec before building
+alwaysApply: true
+---
+
+# Define before build
+
+On conflict: `AGENTS.md` and `docs/agent-graph-pr.md` win, then rules, then skills.
+
+Any non-trivial task needs `docs/specs/<slug>.md` (from `docs/specs/_template.md`) with status `approved (Tam, <date>)` before research or implementation. Stop after the draft; Tam approves in a later turn.
+
+Exempt: a typo, a single-file obvious fix, or when Tam says "fast" / "just do it".
+
+Ambiguous requirements: `interview-me` first. Then `spec-driven-development`, then `planning-and-task-breakdown`.

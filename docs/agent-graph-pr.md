@@ -14,7 +14,7 @@ Use when **at least three** apply:
 4. Done-ness is checkable (commands, CI, reviewer verdicts)
 5. Coordination benefit beats overhead (especially `child_data: yes`)
 
-Otherwise: implement → verify → done.
+Otherwise: implement → verify → done. Spec is `n/a` only for a typo, a single-file fix, or when Tam says "fast". Any other non-trivial change still needs `approved (Tam, <date>)` before research or implementation.
 
 ## Shared state
 
@@ -23,6 +23,7 @@ acceptance: <1–3 observable outcomes>
 layers: none | web | mobile | api
 child_data: yes | no
 ui_screenshots: yes | n/a
+spec: docs/specs/<slug>.md (approved by Tam <date>) | n/a
 verify: <commands + exit codes / reviewer verdicts>
 risks: <privacy, auth, rollback>
 ```
@@ -31,7 +32,9 @@ risks: <privacy, auth, rollback>
 
 ```mermaid
 flowchart TD
-  S[Shared state<br/>PR body] --- R[Research / scope]
+  S[Shared state<br/>PR body] --- P[Spec → Tam approves]
+  P -->|approved| R[Research / scope]
+  P -->|typo, one file, or fast| I
   R -->|plan| I[Implement + tests]
   I -->|diff| V[Verify independent]
   V -->|fail| I
@@ -43,7 +46,8 @@ flowchart TD
 
 | Node | Type | Job |
 |------|------|-----|
-| Research / scope | agent | Locate code, scope-challenge, reuse first |
+| Spec → Tam approves | agent, then Tam | Draft `docs/specs/<slug>.md` from `docs/specs/_template.md`. Stop. Tam sets `approved (Tam, <date>)` before research or implementation. Record `spec: docs/specs/<slug>.md (approved by Tam <date>)`. |
+| Research / scope | agent | Locate code, scope-challenge, reuse first. Only after the spec is approved, unless the change is exempt. |
 | Implement | agent | Write code/tests; local verify while iterating |
 | Verify | fresh agent | `/verifier` (+ `/security-auditor`, `/ui-reviewer` as needed) without implementer rationale |
 | Human approve | Tam | Merge only on explicit ask; `[ready]` ≠ merge |
@@ -54,6 +58,9 @@ flowchart TD
 
 | From | Condition | Next |
 |------|-----------|------|
+| Spec | draft, non-trivial | Stay. Tam approves in a later turn |
+| Spec | `approved (Tam, <date>)` | Research |
+| Spec | typo, single-file, or Tam says "fast" | Implement (spec `n/a`) |
 | Verify | fail / checklist miss | Implement |
 | Verify | acceptance unclear | Research |
 | Verify | pass + screenshots if UI + CI green | Human (`[ready]`) |
