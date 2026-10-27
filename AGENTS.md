@@ -8,8 +8,8 @@ Agent behavior for **kids-gamification**. Read this first, then `docs/agent-grap
 - Keep diffs surgical. Prefer reuse over rebuild.
 - On non-trivial work, run a brief scope challenge (`.cursor/rules/engineering-discipline.mdc`).
 - When stuck on design thrash, use `.cursor/skills/problem-solving/SKILL.md`.
-- Non-trivial PRs follow `docs/agent-graph-pr.md`: research → implement → **independent** verify → human merge.
-- Typo / single-file obvious fixes stay a single loop.
+- Non-trivial PRs follow `docs/agent-graph-pr.md`: spec → Tam approves → research → implement → **independent** verify → human merge. Spec file: `docs/specs/<slug>.md` with status `approved (Tam, <date>)` before research or implementation (`.cursor/rules/define-before-build.mdc`). Shared state includes `spec: docs/specs/<slug>.md (approved by Tam <date>)`.
+- Typo / single-file obvious fixes, or Tam saying "fast", stay a single loop (no spec).
 
 ## Cursor Cloud / PR rules
 
@@ -32,7 +32,7 @@ Builder must not self-approve. Cap build↔review loops (~2); escalate remaining
 
 | Surface | Dir | Run | Test | Lint/Build |
 |---------|-----|-----|------|------------|
-| Web app | `.` | `npm run dev` | `curl -s localhost:3000/api/health` | `npm run verify` (`lint` + `build`) |
+| Web app | `.` | `npm run dev` | `curl -s localhost:3000/api/health` | `npm run verify` (`lint` && `test` && `build`) |
 | SQLite | `data/app.db` (local) / `/data/app.db` (Docker) | `npm run db:migrate` | seed via health/migrate | `npm run db:generate` |
 | Deploy | Coolify + `docs/COOLIFY_DEPLOYMENT.md` | container `:3000`, volume `/data` | `curl …/api/health` | Actions: CI → Coolify Deploy |
 
@@ -42,5 +42,7 @@ Do not claim "tests pass" without fresh command output in the turn.
 
 - `.cursor/agents/` — verifier, security-auditor, ui-reviewer
 - `.cursor/rules/engineering-discipline.mdc`
+- `.cursor/rules/define-before-build.mdc`
 - `.cursor/rules/pr-workflow.mdc`
+- `docs/specs/_template.md`
 - `docs/agent-graph-pr.md`

@@ -28,7 +28,7 @@ Details: `.cursor/skills/pr-workflow/SKILL.md`. Graph: `docs/agent-graph-pr.md`.
 4. Run `/verifier` (and `/security-auditor` / `/ui-reviewer` as applicable) in fresh context.
 5. Babysit CI + comments; set `[ready]` only when green.
 6. Stop — wait for Tam to merge.
-7. After merge: cleanup worktree if used. Deploy via Docker on host **3118** + cloudflared ingress (see skill) when shipping runtime.
+7. After merge: cleanup worktree if used. Deploy via Docker on host **3118** + cloudflared ingress (see skill) when shipping runtime. Rollback: revert the merge commit and redeploy the previous release; do not delete the `/data` volume.
 
 ## Must not
 

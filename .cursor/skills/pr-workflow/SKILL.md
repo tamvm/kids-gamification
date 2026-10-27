@@ -64,6 +64,8 @@ gh pr merge <N> --merge
 - Tunnel: existing `n8n` at `/home/pi/.cloudflared/config.yml` — ingress → Coolify host port; Zero Trust on `kids.kenchange.com`
 - Smoke: `https://kids.kenchange.com/api/health` → `{"status":"ok"}`
 
+**Rollback:** Name it in the PR before shipping runtime. Revert the merge commit (`git revert -m 1`) and redeploy the previous Coolify release. Do not delete the `/data` volume (`DATABASE_PATH=/data/app.db`). Schema changes stay expand/contract so the previous app can still open the file. If a migration is not backward-compatible, stop and ask Tam before deploy.
+
 ## 5. Cleanup
 
 ```bash
